@@ -11,3 +11,36 @@ I'm using the following, currently:
 * https://github.com/Grunny/zap-cli
 
 Feedback and pull requests are most welcome :-)
+
+# How to use
+
+Create output directories (optional):
+
+```
+mkdir /tmp/report
+chmod a+w /tmp/report
+mkdir /tmp/session
+chmod a+w /tmp/session
+```
+
+Start proxy:
+
+```
+./run-docker.sh -m proxy -i owasp/zap2docker-stable -p 8090 -r /tmp/report -s /tmp/session
+```
+
+Switches `-r` and `-s` are optional, but without them you will loose session and report files after scanning.
+
+Run your Selenium/REST/whatever integration test using proxy:
+
+```
+java -jar my-tests.jar -Dhttp.proxyHost=localhost -Dhttp.proxyPort=8090 
+```
+Start scanner:
+
+```
+./run-docker.sh -m scan http://targetip:8080 http://targetip:9090
+```
+
+Archive report files from directory given by `-r` option in Jenkins.
+
