@@ -17,7 +17,7 @@ Feedback and pull requests are most welcome :-)
 Create output directories (optional):
 
 ```
-mkdir /tmp/report
+mkdir -p /tmp/report
 chmod a+w /tmp/report
 mkdir /tmp/session
 chmod a+w /tmp/session

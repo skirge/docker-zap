@@ -15,7 +15,8 @@ function usage ()
 	-m|mode       Mode is one of proxy,scan: start proxy or scan application
 	-i|image      Docker image of ZAP to use
 	-r|report     Directory to copy report to (default: /tmp/report), has to be writable for zap user
-	-s|session    Directory to store session information (default: /tmp/session), has to be writable for zap user"
+	-s|session    Directory to store session information (default: /tmp/session), has to be writable for zap user
+	-l|policy	  Name of scan policy (without extension), must exist in ZAP image (/home/zap/.ZAP/policies)"
 
 }
 
@@ -24,6 +25,7 @@ function usage ()
 #-----------------------------------------------------------------------
 PROXY_PORT=8090
 IMAGE=owasp/zap2docker-weekly
+POLICY=""
 
 while getopts ":hvm:p:i:r:s:" opt
 do
@@ -42,6 +44,8 @@ do
 	r|report   )  REPORTDIR=$OPTARG	;;
 
 	s|session  )  SESSIONDIR=$OPTARG ;;
+
+	l|policy   )  POLICY=$OPTARG ;;
 
 	* )  echo -e "\n  Option does not exist : $OPTARG\n"
 		  usage; exit 1   ;;
@@ -80,7 +84,9 @@ if [ "$COMMAND" == "proxy" ]; then
 	CONTAINER_ID=$(docker run -u zap -p ${PROXY_PORT}:8080 $REPORT_VOLUME $SESSION_VOLUME -d $IMAGE zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.key=$KEY -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config connection.timeoutInSecs=5 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true)
 	echo $CONTAINER_ID > container_id
 	# hack to workaround lack of option for specifying Scan policy in zap-cli
-	sleep 5 && docker exec $CONTAINER_ID cp "/home/zap/.ZAP/policies/PCI CP API Minimal.policy" "/home/zap/.ZAP/policies/Default\ Policy.policy"
+	if [ ! -z $POLICY ]; then
+		sleep 5 && docker exec $CONTAINER_ID cp "/home/zap/.ZAP/policies/$POLICY.policy" "/home/zap/.ZAP/policies/Default\ Policy.policy"
+	fi
 	exit
 fi
 
