@@ -87,6 +87,8 @@ if [ "$COMMAND" == "proxy" ]; then
 	if [ ! -z $POLICY ]; then
 		sleep 5 && docker exec $CONTAINER_ID cp "/home/zap/.ZAP/policies/$POLICY.policy" "/home/zap/.ZAP/policies/Default\ Policy.policy"
 	fi
+	CONTAINER_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_ID`
+	echo $CONTAINER_IP > container_ip
 	exit
 fi
 

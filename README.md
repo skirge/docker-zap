@@ -33,8 +33,10 @@ Switches `-r` and `-s` are optional, but without them you will loose session and
 
 Run your Selenium/REST/whatever integration test using proxy:
 
+File `container_ip` contains ip of ZAP's container. You can use it or get IP using `docker inspect`.
+
 ```
-java -jar my-tests.jar -Dhttp.proxyHost=localhost -Dhttp.proxyPort=8090 
+java -jar my-tests.jar -Dhttp.proxyHost=`cat container_ip` -Dhttp.proxyPort=8090 
 ```
 Start scanner:
 
